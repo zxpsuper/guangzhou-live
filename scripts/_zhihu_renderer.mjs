@@ -9,6 +9,8 @@ import puppeteer from 'puppeteer-core';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
+import fs from 'fs';
+
 const CHROME_PATHS = [
   process.env.CHROME_PATH,
   // Windows
@@ -27,10 +29,7 @@ const CHROME_PATHS = [
 
 function findChrome() {
   for (const p of CHROME_PATHS) {
-    try {
-      const { existsSync } = await import('fs');
-      if (existsSync(p)) return p;
-    } catch {}
+    if (fs.existsSync(p)) return p;
   }
   return null;
 }
@@ -95,13 +94,15 @@ async function main() {
     process.exit(1);
   }
 
-  const chromePath = await findChrome();
+  const chromePath = findChrome();
   if (!chromePath) {
     console.error('Error: Chrome/Edge not found. Set CHROME_PATH env variable.');
     process.exit(1);
   }
 
-  const browser = await puppeteer.launch({
+  // puppeteer-core v25 exports launch() at top level; v24 uses chromium.launch()
+  const pw = puppeteer.chromium || puppeteer;
+  const browser = await pw.launch({
     executablePath: chromePath,
     headless: 'new',
     args: [
