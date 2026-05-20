@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "WebSearch",
+      "WebFetch(domain:www.weibo.com)",
+      "WebFetch(domain:www.dianping.com)",
+      "WebFetch(domain:www.gzdaily.cn)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "WebFetch(domain:www.timeout.com)",
+      "WebFetch(domain:www.trip.com)",
+      "WebFetch(domain:guangzhou.life)",
+      "WebFetch(domain:www.thatsmags.com)",
+      "WebFetch(domain:www.weather.com.cn)",
+      "Bash(python -c \"import openai; print\\(f'openai {openai.__version__}'\\)\")",
+      "Bash(python3 *)",
+      "WebFetch(domain:zhuanlan.zhihu.com)",
+      "Bash(curl -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" \"https://zhuanlan.zhihu.com/p/678041376\")",
+      "Bash(curl -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" -H \"Accept: application/json\" \"https://www.zhihu.com/api/v4/articles/678041376\")",
+      "Bash(curl -s -L -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36' 'https://webcache.googleusercontent.com/search?q=cache:zhuanlan.zhihu.com/p/678041376')",
+      "Bash(npx --version)"
+    ]
+  }
+}
