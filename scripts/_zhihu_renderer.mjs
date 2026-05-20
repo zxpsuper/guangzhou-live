@@ -6,9 +6,6 @@
  * 输出: JSON { title, author, items, imageUrls }
  */
 import puppeteer from 'puppeteer-core';
-import { fileURLToPath } from 'url';
-import path from 'path';
-
 import fs from 'fs';
 
 const CHROME_PATHS = [
@@ -33,59 +30,6 @@ function findChrome() {
   }
   return null;
 }
-
-// 在浏览器中执行的 JS，提取结构化内容
-const EXTRACT_JS = `() => {
-  const title = document.querySelector('.Post-Title')
-    ? document.querySelector('.Post-Title').textContent.trim()
-    : document.title.replace(' - 知乎', '').trim();
-
-  const author = document.querySelector('.AuthorInfo-name')
-    ? document.querySelector('.AuthorInfo-name').textContent.trim()
-    : '';
-
-  const contentEl = document.querySelector('.Post-RichTextContainer .RichText')
-    || document.querySelector('.Post-RichTextContainer');
-
-  if (!contentEl) return { title, author, items: [], imageUrls: [] };
-
-  const items = [];
-  const walk = (el) => {
-    const tag = el.tagName.toLowerCase();
-    if (tag === 'h2') {
-      items.push({ type: 'h2', text: el.textContent.trim() });
-    } else if (tag === 'h3') {
-      items.push({ type: 'h3', text: el.textContent.trim() });
-    } else if (tag === 'h4') {
-      items.push({ type: 'h4', text: el.textContent.trim() });
-    } else if (tag === 'figure') {
-      const img = el.querySelector('img');
-      const caption = el.querySelector('figcaption');
-      const src = img ? (img.getAttribute('data-original') || img.getAttribute('src') || '') : '';
-      items.push({ type: 'image', src, caption: caption ? caption.textContent.trim() : '' });
-    } else if (tag === 'p') {
-      items.push({ type: 'p', text: el.textContent.trim() });
-    } else if (tag === 'ul' || tag === 'ol') {
-      const lis = Array.from(el.querySelectorAll(':scope > li')).map(li => li.textContent.trim());
-      items.push({ type: tag, items: lis });
-    } else if (tag === 'blockquote') {
-      items.push({ type: 'blockquote', text: el.textContent.trim() });
-    } else if (tag === 'pre') {
-      items.push({ type: 'pre', text: el.textContent.trim() });
-    } else if (tag === 'div' || tag === 'span') {
-      for (const child of el.children) walk(child);
-    }
-  };
-
-  for (const child of contentEl.children) walk(child);
-
-  const imgs = Array.from(contentEl.querySelectorAll('img'));
-  const imageUrls = imgs
-    .map(img => img.getAttribute('data-original') || img.getAttribute('src') || '')
-    .filter(Boolean);
-
-  return { title, author, items, imageUrls };
-}`;
 
 async function main() {
   const url = process.argv[2];
@@ -130,7 +74,59 @@ async function main() {
   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
   await new Promise((r) => setTimeout(r, 8000));
 
-  const result = await page.evaluate(EXTRACT_JS);
+  // 直接传函数给 evaluate，而非字符串
+  const result = await page.evaluate(() => {
+    const title = document.querySelector('.Post-Title')
+      ? document.querySelector('.Post-Title').textContent.trim()
+      : document.title.replace(' - 知乎', '').trim();
+
+    const author = document.querySelector('.AuthorInfo-name')
+      ? document.querySelector('.AuthorInfo-name').textContent.trim()
+      : '';
+
+    const contentEl = document.querySelector('.Post-RichTextContainer .RichText')
+      || document.querySelector('.Post-RichTextContainer');
+
+    if (!contentEl) return { title, author, items: [], imageUrls: [] };
+
+    const items = [];
+    const walk = (el) => {
+      const tag = el.tagName.toLowerCase();
+      if (tag === 'h2') {
+        items.push({ type: 'h2', text: el.textContent.trim() });
+      } else if (tag === 'h3') {
+        items.push({ type: 'h3', text: el.textContent.trim() });
+      } else if (tag === 'h4') {
+        items.push({ type: 'h4', text: el.textContent.trim() });
+      } else if (tag === 'figure') {
+        const img = el.querySelector('img');
+        const caption = el.querySelector('figcaption');
+        const src = img ? (img.getAttribute('data-original') || img.getAttribute('src') || '') : '';
+        items.push({ type: 'image', src, caption: caption ? caption.textContent.trim() : '' });
+      } else if (tag === 'p') {
+        items.push({ type: 'p', text: el.textContent.trim() });
+      } else if (tag === 'ul' || tag === 'ol') {
+        const lis = Array.from(el.querySelectorAll(':scope > li')).map(li => li.textContent.trim());
+        items.push({ type: tag, items: lis });
+      } else if (tag === 'blockquote') {
+        items.push({ type: 'blockquote', text: el.textContent.trim() });
+      } else if (tag === 'pre') {
+        items.push({ type: 'pre', text: el.textContent.trim() });
+      } else if (tag === 'div' || tag === 'span') {
+        for (const child of el.children) walk(child);
+      }
+    };
+
+    for (const child of contentEl.children) walk(child);
+
+    const imgs = Array.from(contentEl.querySelectorAll('img'));
+    const imageUrls = imgs
+      .map(img => img.getAttribute('data-original') || img.getAttribute('src') || '')
+      .filter(Boolean);
+
+    return { title, author, items, imageUrls };
+  });
+
   await browser.close();
 
   // 输出 JSON 到 stdout
