@@ -99,3 +99,47 @@ references:
 3. **合成稿** → `plan/agent/step-3-drafts.md` — 按风格要求合成候选文章
 
 使用方式：引用对应 prompt 文件的内容执行。产物存入 `plan/hot-topics/`、`plan/sources/`、`plan/drafts/`。
+
+## 知乎文章爬取
+
+使用 `/scrape-zhihu` slash command 可一键将知乎专栏文章转为本博客 Markdown 文章。
+
+**基础用法：**
+```
+/scrape-zhihu https://zhuanlan.zhihu.com/p/xxxxxx
+```
+
+**完整参数：**
+```
+/scrape-zhihu <url> [--slug <slug>] [--date <YYYY-MM-DD>] [--tags <tag1,tag2>] [--categories <cat>]
+```
+
+**产物：**
+- Markdown 文章：`posts/<year>/<slug>.md`（含 frontmatter）
+- WebP 图片：`public/images/<slug>-01.webp` … `<slug>-NN.webp`
+
+**脚本文件：**
+- `scripts/scrape_zhihu.py` — 主流程（Python，`pip install requests Pillow`）
+- `scripts/_zhihu_renderer.mjs` — Puppeteer 渲染器（Node.js，需系统 Chrome/Edge）
+
+## 小红书笔记爬取
+
+使用 `/scrape-xiaohongshu` slash command 可一键将小红书笔记转为本博客 Markdown 文章。
+
+**基础用法：**
+```
+/scrape-xiaohongshu https://www.xiaohongshu.com/explore/xxxxxx?xsec_token=...
+```
+
+**完整参数：**
+```
+/scrape-xiaohongshu <url> [--slug <slug>] [--date <YYYY-MM-DD>] [--tags <tag1,tag2>] [--categories <cat>]
+```
+
+**产物：**
+- Markdown 文章：`posts/<year>/<slug>.md`（含 frontmatter，笔记 #标签 自动合并）
+- WebP 图片：`public/images/<slug>-01.webp` … `<slug>-NN.webp`
+
+**脚本文件：**
+- `scripts/scrape_xiaohongshu.py` — 主流程（Python，`pip install requests Pillow`）
+- `scripts/_xiaohongshu_renderer.mjs` — Puppeteer 渲染器（Node.js，移动端 UA 免登录）

@@ -14,7 +14,7 @@ export const themeConfig = {
     lang: "zh-CN",
     // 作者
     author: {
-      name: "广州百晓生",
+      name: "小皮咖",
       cover: "/images/logo/logo.webp",
       email: "zxpscau@163.com",
       link: "https://suporka.site",
@@ -110,14 +110,15 @@ export const themeConfig = {
   },
   // 导航栏菜单
   nav: [
-    // {
-    //   text: "文库",
-    //   items: [
-    //     { text: "文章列表", link: "/pages/archives", icon: "article" },
-    //     { text: "全部分类", link: "/pages/categories", icon: "folder" },
-    //     { text: "全部标签", link: "/pages/tags", icon: "hashtag" },
-    //   ],
-    // },
+    {
+      text: "文库",
+      items: [
+        { text: "文章列表", link: "/pages/archives", icon: "article" },
+        { text: "全部分类", link: "/pages/categories", icon: "folder" },
+        { text: "全部标签", link: "/pages/tags", icon: "hashtag" },
+        
+      ],
+    },
     // {
     //   text: "专栏",
     //   items: [
@@ -159,26 +160,6 @@ export const themeConfig = {
         // },
       ],
     },
-    // {
-    //   name: "服务",
-    //   list: [
-    //     {
-    //       icon: "https://pic.efefee.cn/uploads/2024/04/08/6613465358077.png",
-    //       name: "起始页",
-    //       url: "https://nav.imsyy.top/",
-    //     },
-    //     {
-    //       icon: "https://pic.efefee.cn/uploads/2024/04/08/661346d418ad7.png",
-    //       name: "今日热榜",
-    //       url: "https://hot.imsyy.top/",
-    //     },
-    //     {
-    //       icon: "https://pic.efefee.cn/uploads/2024/04/08/66134722586fa.png",
-    //       name: "站点监测",
-    //       url: "https://status.imsyy.top/",
-    //     },
-    //   ],
-    // },
     // {
     //   name: "项目",
     //   list: [
@@ -316,10 +297,10 @@ export const themeConfig = {
   },
   // 评论
   comment: {
-    enable: false,
+    enable: true,
     // 评论系统选择
     // artalk / twikoo
-    type: "artalk",
+    type: "twikoo",
     // artalk
     // https://artalk.js.org/
     artalk: {
@@ -331,9 +312,9 @@ export const themeConfig = {
     twikoo: {
       // 必填，若不想使用 CDN，可以使用 pnpm add twikoo 安装并引入
       js: "https://mirrors.sustech.edu.cn/cdnjs/ajax/libs/twikoo/1.6.39/twikoo.all.min.js",
-      envId: "",
+      envId: "https://twikoo-netlify-suporka.netlify.app",
       // 环境地域，默认为 ap-shanghai，腾讯云环境填 ap-shanghai 或 ap-guangzhou；Vercel 环境不填
-      region: "ap-shanghai",
+      region: "",
       lang: "zh-CN",
     },
   },

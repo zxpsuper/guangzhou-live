@@ -3,10 +3,15 @@
     <h1 class="title">你好，欢迎来到{{ theme.siteMeta.title }}</h1>
     <div class="subtitle">
       <Transition name="fade" mode="out-in">
+        <span :key="theme.siteMeta.description" class="text">
+          {{ theme.siteMeta.description }}
+        </span>
+      </Transition>
+      <!-- <Transition name="fade" mode="out-in">
         <span :key="hitokotoData?.hitokoto" class="text">
           {{ hitokotoData?.hitokoto ? hitokotoData?.hitokoto : theme.siteMeta.description }}
         </span>
-      </Transition>
+      </Transition> -->
     </div>
     <Transition name="fade" mode="out-in">
       <i v-if="height === 'full'" class="iconfont icon-up" @click="scrollToHome" />

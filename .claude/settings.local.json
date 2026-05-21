@@ -19,7 +19,13 @@
       "Bash(curl -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" \"https://zhuanlan.zhihu.com/p/678041376\")",
       "Bash(curl -s -L -H \"User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36\" -H \"Accept: application/json\" \"https://www.zhihu.com/api/v4/articles/678041376\")",
       "Bash(curl -s -L -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/120.0.0.0 Safari/537.36' 'https://webcache.googleusercontent.com/search?q=cache:zhuanlan.zhihu.com/p/678041376')",
-      "Bash(npx --version)"
+      "Bash(npx --version)",
+      "Bash(python -X utf8 scripts/scrape_zhihu.py *)",
+      "Bash(PYTHONIOENCODING=utf-8 python -X utf8 scripts/scrape_zhihu.py *)",
+      "Bash(node scripts/_zhihu_renderer.mjs *)",
+      "Bash(python -X utf8 scripts/scrape_xiaohongshu.py *)",
+      "Bash(PYTHONIOENCODING=utf-8 python -X utf8 scripts/scrape_xiaohongshu.py *)",
+      "Bash(node scripts/_xiaohongshu_renderer.mjs *)"
     ]
   }
 }
