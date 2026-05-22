@@ -158,18 +158,27 @@ onMounted(() => {
         ),
         n = e.createElement("script"),
         r = e.getElementsByTagName("script")[0];
-      (n.type = "text/javascript"),
+      ((n.type = "text/javascript"),
         n.setAttribute("charset", "UTF-8"),
         (n.async = !0),
         (n.src = c),
         (n.id = "LA_COLLECT"),
-        (i.d = n);
+        (i.d = n));
       var o = function () {
         s.LA.ids.push(i);
       };
-      s.LA ? s.LA.ids && o() : ((s.LA = p), (s.LA.ids = []), o()), r.parentNode.insertBefore(n, r);
+      (s.LA ? s.LA.ids && o() : ((s.LA = p), (s.LA.ids = []), o()),
+        r.parentNode.insertBefore(n, r));
     })();
   })({ id: "3PzWKibdvw7ngBWx", ck: "3PzWKibdvw7ngBWx", hashMode: true });
+  // 百度统计
+  var _hmt = _hmt || [];
+  (function () {
+    var hm = document.createElement("script");
+    hm.src = "https://hm.baidu.com/hm.js?dca014c80a24a76a432ddba4346273f1";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+  })();
 });
 
 onBeforeUnmount(() => {

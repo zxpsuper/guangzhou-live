@@ -85,6 +85,8 @@ const gridStyle = computed(() =>
 // 判断是否显示封面
 const showCover = () => themeConfig.value?.cover?.showCover?.enable
 
+const sleepRandomTime = (min, max) => new Promise(resolve => setTimeout(resolve, Math.random() * (max - min) + min))
+
 // 获取封面图片 按优先级获取：cover > defaultCover > false
 const getCover = ({ cover: itemCover }) => {
   const { cover } = themeConfig.value ?? {}
