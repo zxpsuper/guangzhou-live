@@ -7,106 +7,277 @@
     @mask-click="store.changeShowStatus('searchShow')"
     @modal-close="store.changeShowStatus('searchShow')"
   >
-    <ais-instant-search
-      :search-client="searchClient"
-      :future="{
-        preserveSharedStateOnUnmount: true,
-      }"
-      index-name="imsyy"
-      @state-change="searchChange"
-    >
-      <ais-configure :hits-per-page.camel="8" />
-      <ais-search-box placeholder="想要搜点什么" autofocus />
-      <ais-hits v-if="hasSearchValue">
-        <template v-slot="{ items }">
-          <Transition name="fade" mode="out-in">
-            <div v-if="formatSearchData(items)?.length" class="search-list">
-              <div
-                v-for="(item, index) in formatSearchData(items)"
-                :key="index"
-                class="search-item s-card hover"
-                @click="jumpSearch(item.url)"
-              >
-                <p class="title" v-html="item.title" />
-                <p v-if="item?.anchor" class="anchor" v-html="item.anchor" />
-                <p v-if="item?.content" class="content s-card" v-html="item.content" />
-              </div>
-            </div>
-            <div v-else class="no-result">
-              <i class="iconfont icon-search-empty" />
-              <span class="text">搜索结果为空</span>
-            </div>
-          </Transition>
-        </template>
-      </ais-hits>
-      <ais-pagination v-if="hasSearchValue" />
-      <ais-stats>
-        <template v-slot="{ processingTimeMS }">
-          <div class="information">
-            <span v-if="hasSearchValue" class="text"> 本次用时 {{ processingTimeMS }} 毫秒 </span>
+    <div class="ais-InstantSearch">
+      <div class="ais-SearchBox">
+        <input
+          ref="searchInput"
+          v-model="keyword"
+          class="ais-SearchBox-input"
+          type="search"
+          placeholder="想要搜点什么"
+          autocomplete="off"
+        />
+      </div>
+      <div v-if="hasSearchValue" class="ais-Hits">
+        <Transition name="fade" mode="out-in">
+          <div v-if="loading" class="no-result">
+            <i class="iconfont icon-search" />
+            <span class="text">搜索索引加载中</span>
           </div>
-          <a class="power" href="https://www.algolia.com/" target="_blank">
-            <i class="iconfont icon-algolia" />
-            <span class="name">Algolia</span>
-          </a>
-        </template>
-      </ais-stats>
-    </ais-instant-search>
+          <div v-else-if="errorMessage" class="no-result">
+            <i class="iconfont icon-search-empty" />
+            <span class="text">{{ errorMessage }}</span>
+          </div>
+          <div v-else-if="pagedResults.length" class="search-list">
+            <div
+              v-for="item in pagedResults"
+              :key="item.id"
+              class="search-item s-card hover"
+              @click="jumpSearch(item.url)"
+            >
+              <p class="title" v-html="item.title" />
+              <p v-if="item.meta" class="anchor" v-html="item.meta" />
+              <p v-if="item.content" class="content s-card" v-html="item.content" />
+            </div>
+          </div>
+          <div v-else class="no-result">
+            <i class="iconfont icon-search-empty" />
+            <span class="text">搜索结果为空</span>
+          </div>
+        </Transition>
+      </div>
+      <div v-if="hasSearchValue && totalPages > 1" class="ais-Pagination">
+        <ul class="ais-Pagination-list">
+          <li
+            v-for="pageIndex in pageNumbers"
+            :key="pageIndex"
+            class="ais-Pagination-item"
+            :class="{ 'ais-Pagination-item--selected': pageIndex === currentPage }"
+          >
+            <button class="ais-Pagination-link" type="button" @click="currentPage = pageIndex">
+              {{ pageIndex + 1 }}
+            </button>
+          </li>
+        </ul>
+      </div>
+      <div class="ais-Stats">
+        <div class="information">
+          <span v-if="hasSearchValue && !loading && !errorMessage" class="text">
+            本次用时 {{ processingTimeMS }} 毫秒，共 {{ searchResults.length }} 条结果
+          </span>
+        </div>
+        <span class="power">
+          <i class="iconfont icon-search" />
+          <span class="name">本地搜索</span>
+        </span>
+      </div>
+    </div>
   </Modal>
 </template>
 
 <script setup>
 import { mainStore } from "@/store";
-import { liteClient } from "algoliasearch/lite";
 
 const store = mainStore();
 const router = useRouter();
+const { site } = useData();
 
-const { theme } = useData();
-const { appId, apiKey } = theme.value.search;
+const keyword = ref("");
+const searchInput = ref(null);
+const searchIndex = ref([]);
+const loading = ref(false);
+const errorMessage = ref("");
+const currentPage = ref(0);
+const processingTimeMS = ref(0);
+const pageSize = 8;
 
-const searchClient = liteClient(appId, apiKey);
+const hasSearchValue = computed(() => keyword.value.trim().length > 0);
 
-// 是否具有搜索词
-const hasSearchValue = ref(false);
-
-// 搜索变化
-const searchChange = ({ uiState, setUiState }) => {
-  const searchData = Object.values(uiState);
-  hasSearchValue.value = searchData.length > 0 && searchData[0].query?.length > 0;
-  setUiState(uiState);
+const normalize = (value) => {
+  return String(value || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
 };
 
-// 处理搜索结果
-const formatSearchData = (data) => {
-  const results = [];
-  // 遍历搜索结果
-  for (let i = 0; i < data.length; i++) {
-    const search = data[i];
-    // 若无 anchor
-    // if (search.anchor === "" || search.anchor === "app") continue;
-    // 获取数据
-    const url = search?.url;
-    const type = search.type === "lvl1" ? "post" : "content";
-    const title = search._highlightResult?.hierarchy?.lvl1?.value;
-    const anchor = search._highlightResult?.hierarchy?.[search.type]?.value;
-    const content = search._highlightResult?.content?.value;
-    // 生成搜索数据
-    const searchData = { url, type, title, anchor, content };
-    results.push(searchData);
+const searchTerms = computed(() => {
+  const normalized = normalize(keyword.value);
+  if (!normalized) return [];
+  const terms = normalized.split(" ").filter(Boolean);
+  return [...new Set(terms.length > 1 ? [normalized, ...terms] : terms)];
+});
+
+const escapeHtml = (value) => {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+};
+
+const highlight = (value, terms) => {
+  const text = String(value || "");
+  if (!text || !terms.length) return escapeHtml(text);
+
+  const lowerText = text.toLowerCase();
+  const ranges = [];
+
+  for (const term of [...terms].sort((a, b) => b.length - a.length)) {
+    if (!term) continue;
+    let start = 0;
+    const lowerTerm = term.toLowerCase();
+    while (start < lowerText.length) {
+      const index = lowerText.indexOf(lowerTerm, start);
+      if (index === -1) break;
+      ranges.push([index, index + term.length]);
+      start = index + term.length;
+    }
   }
-  console.log(results);
-  return results;
+
+  if (!ranges.length) return escapeHtml(text);
+
+  const mergedRanges = ranges
+    .sort((a, b) => a[0] - b[0])
+    .reduce((result, range) => {
+      const last = result[result.length - 1];
+      if (!last || range[0] > last[1]) {
+        result.push(range);
+      } else {
+        last[1] = Math.max(last[1], range[1]);
+      }
+      return result;
+    }, []);
+
+  let html = "";
+  let cursor = 0;
+  for (const [start, end] of mergedRanges) {
+    html += escapeHtml(text.slice(cursor, start));
+    html += `<mark>${escapeHtml(text.slice(start, end))}</mark>`;
+    cursor = end;
+  }
+  html += escapeHtml(text.slice(cursor));
+  return html;
 };
 
-// 跳转搜索结果
+const createSnippet = (value, terms, maxLength = 140) => {
+  const text = String(value || "").replace(/\s+/g, " ").trim();
+  if (text.length <= maxLength) return text;
+
+  const lowerText = text.toLowerCase();
+  const matchIndexes = terms
+    .map((term) => lowerText.indexOf(term.toLowerCase()))
+    .filter((index) => index >= 0);
+  const matchIndex = matchIndexes.length ? Math.min(...matchIndexes) : 0;
+  const start = Math.max(0, matchIndex - 45);
+  const end = Math.min(text.length, start + maxLength);
+  const prefix = start > 0 ? "..." : "";
+  const suffix = end < text.length ? "..." : "";
+  return `${prefix}${text.slice(start, end)}${suffix}`;
+};
+
+const getFieldScore = (value, terms, weight) => {
+  const normalized = normalize(value);
+  if (!normalized) return 0;
+
+  return terms.reduce((score, term) => {
+    if (!normalized.includes(term)) return score;
+    return score + weight + (normalized.startsWith(term) ? weight / 2 : 0);
+  }, 0);
+};
+
+const includesAnyTerm = (value, terms) => {
+  const normalized = normalize(value);
+  return terms.some((term) => normalized.includes(term));
+};
+
+const getSnippetSource = (item, terms) => {
+  if (includesAnyTerm(item.description, terms)) return item.description;
+  if (includesAnyTerm(item.content, terms)) return item.content;
+  return item.description || item.content;
+};
+
+const searchResults = computed(() => {
+  if (!hasSearchValue.value || loading.value || errorMessage.value) return [];
+
+  const startTime = performance.now();
+  const terms = searchTerms.value;
+  const results = searchIndex.value
+    .map((item) => {
+      const metaText = [...(item.tags || []), ...(item.categories || [])].join(" ");
+      const score =
+        getFieldScore(item.title, terms, 100) +
+        getFieldScore(metaText, terms, 60) +
+        getFieldScore(item.description, terms, 40) +
+        getFieldScore(item.content, terms, 10);
+
+      return { item, metaText, score };
+    })
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score || (b.item.date || 0) - (a.item.date || 0))
+    .map(({ item, metaText }) => {
+      const snippet = createSnippet(getSnippetSource(item, terms), terms);
+
+      return {
+        id: item.id,
+        url: item.url,
+        title: highlight(item.title, terms),
+        meta: metaText ? highlight(metaText, terms) : "",
+        content: snippet ? highlight(snippet, terms) : "",
+      };
+    });
+
+  processingTimeMS.value = Math.max(0, Math.round(performance.now() - startTime));
+  return results;
+});
+
+const totalPages = computed(() => Math.ceil(searchResults.value.length / pageSize));
+const pageNumbers = computed(() => Array.from({ length: totalPages.value }, (_, index) => index));
+const pagedResults = computed(() => {
+  const start = currentPage.value * pageSize;
+  return searchResults.value.slice(start, start + pageSize);
+});
+
+const loadSearchIndex = async () => {
+  if (searchIndex.value.length || loading.value) return;
+
+  loading.value = true;
+  errorMessage.value = "";
+  try {
+    const response = await fetch(`${site.value.base}search-index.json`);
+    const contentType = response.headers.get("content-type") || "";
+    if (!response.ok || !contentType.includes("application/json")) {
+      throw new Error("搜索索引未生成或响应格式错误");
+    }
+    searchIndex.value = await response.json();
+  } catch (error) {
+    errorMessage.value = error.message || "搜索索引加载失败";
+  } finally {
+    loading.value = false;
+  }
+};
+
 const jumpSearch = (url) => {
   store.changeShowStatus("searchShow");
   router.go(url);
 };
 
-onBeforeUnmount(() => {
-  hasSearchValue.value = false;
+watch(
+  () => store.searchShow,
+  async (show) => {
+    if (!show) return;
+    await loadSearchIndex();
+    await nextTick();
+    searchInput.value?.focus();
+  },
+);
+
+watch(keyword, () => {
+  currentPage.value = 0;
+});
+
+watch(totalPages, (pages) => {
+  if (pages > 0 && currentPage.value >= pages) currentPage.value = pages - 1;
 });
 </script>
 
@@ -221,6 +392,13 @@ onBeforeUnmount(() => {
           justify-content: center;
           width: 100%;
           height: 100%;
+          padding: 0;
+          border: none;
+          outline: none;
+          color: inherit;
+          cursor: pointer;
+          font: inherit;
+          background: transparent;
           &:hover {
             color: var(--main-font-color);
           }

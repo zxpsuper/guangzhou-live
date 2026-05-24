@@ -97,15 +97,6 @@ export const themeConfig = {
           rel: "stylesheet",
         },
       ],
-      // 预载 DocSearch
-      [
-        "link",
-        {
-          href: "https://X5EBEZB53I-dsn.algolia.net",
-          rel: "preconnect",
-          crossorigin: "",
-        },
-      ],
     ],
   },
   // 导航栏菜单
@@ -210,7 +201,13 @@ export const themeConfig = {
       defaultCover: [
         'https://picsum.photos/800/400?random=1',
         'https://picsum.photos/800/400?random=2',
-        'https://picsum.photos/800/400?random=3'
+        'https://picsum.photos/800/400?random=3',
+        'https://picsum.photos/800/400?random=4',
+        'https://picsum.photos/800/400?random=5',
+        'https://picsum.photos/800/400?random=6',
+        'https://picsum.photos/800/400?random=7',
+        'https://picsum.photos/800/400?random=8',
+        'https://picsum.photos/800/400?random=9',
       ]
     }
   },
@@ -372,11 +369,8 @@ export const themeConfig = {
     type: "playlist",
   },
   // 搜索
-  // https://www.algolia.com/
   search: {
     enable: true,
-    appId: "CY4ROR5QIL",
-    apiKey: "5c79bb902e1a7c944948329899c56534",
   },
   // 打赏
   rewardData: {

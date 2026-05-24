@@ -1,5 +1,6 @@
 import { defineConfig } from "vitepress";
 import { createRssFile } from "./theme/utils/generateRSS.mjs";
+import { createSearchIndex, getSearchIndex } from "./theme/utils/generateSearchIndex.mjs";
 import { withPwa } from "@vite-pwa/vitepress";
 import {
   getAllPosts,
@@ -75,10 +76,26 @@ export default withPwa(
     // buildEnd
     buildEnd: async (config) => {
       await createRssFile(config, themeConfig);
+      await createSearchIndex(config);
     },
     // vite
     vite: {
       plugins: [
+        {
+          name: "local-search-index",
+          configureServer(server) {
+            server.middlewares.use(async (req, res, next) => {
+              if (req.url !== "/search-index.json") {
+                next();
+                return;
+              }
+
+              const searchIndex = await getSearchIndex();
+              res.setHeader("Content-Type", "application/json; charset=utf-8");
+              res.end(JSON.stringify(searchIndex));
+            });
+          },
+        },
         AutoImport({
           imports: ["vue", "vitepress"],
           dts: ".vitepress/auto-imports.d.ts",

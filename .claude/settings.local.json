@@ -30,7 +30,19 @@
       "Bash(where python3 *)",
       "Bash(where python *)",
       "Bash(PYTHONIOENCODING=utf-8 python3 *)",
-      "Bash(pip install *)"
+      "Bash(pip install *)",
+      "Bash(xargs grep -l \"algolia|searchIndex|buildSearch\")",
+      "Bash(pnpm install *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm preview *)",
+      "Bash(curl *)",
+      "mcp__ide__getDiagnostics",
+      "Bash(pnpm dev *)",
+      "Skill(scrape-xiaohongshu)",
+      "Bash(py *)",
+      "Bash(magick *)",
+      "Bash(cwebp *)",
+      "Bash(node *)"
     ]
   }
 }
