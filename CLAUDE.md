@@ -19,12 +19,19 @@ A VitePress-based blog site ("广州百晓生") using the Curve theme — a cust
 
 | Command | Description |
 |---------|-------------|
-| `npm run dev` | Start dev server at port 9877 |
+| `npm run dev` | Start dev server (port 9877 via vite config, `--host` for LAN) |
 | `npm run build` | Build for production (output to `.vitepress/dist`) |
 | `npm run preview` | Preview production build |
 | `npm run lint` | ESLint check (.js,.vue,.ts files) |
 | `npm run format` | Prettier auto-format entire project |
 | `npm run deploy:vercel` | Deploy to Vercel via CLI |
+
+## Code Quality
+
+| Config | Key Rules |
+|--------|-----------|
+| **Prettier** (`.prettierrc.json`) | double quotes, trailing commas, tabWidth 2, semi, printWidth 100 |
+| **ESLint** (`.eslintrc.js`) | airbnb-base + vue/vue3-essential, double quotes, no console restrictions |
 
 ## Architecture
 
@@ -45,6 +52,37 @@ A VitePress-based blog site ("广州百晓生") using the Curve theme — a cust
 - `utils/` — Utilities: post data aggregation, RSS generation, Markdown extensions, Fancybox init, comment init
 - `style/` — SCSS files (main, post, animation, font)
 - `assets/themeConfig.mjs` — Default theme configuration
+- **`@` alias** maps to `.vitepress/theme` (used in Vue imports like `@/store`)
+
+### Build-Time Data Flow
+
+1. `config.mjs` calls `getAllPosts()` at import time to scan `posts/` directory
+2. Each post's frontmatter is parsed via `gray-matter`, producing `postData[]` with id, title, date, tags, categories, description, cover
+3. `getAllType()`, `getAllCategories()`, `getAllArchives()` compute tag/category/archive index from `postData`
+4. All computed data is injected into `themeConfig` → available via `useData()` in Vue components
+5. At `buildEnd`, RSS (`/rss.xml`) and search index (`/search-index.json`) are generated
+
+### Markdown Extensions
+
+Configured in `.vitepress/theme/utils/markdownConfig.mjs`:
+- `markdown-it-attrs` — custom attributes on elements
+- `markdown-it-container` — custom containers (tips, warnings, etc.)
+- `markdown-it-mathjax3` — LaTeX math rendering
+- `vitepress-plugin-tabs` — tabbed content blocks
+
+### PWA
+
+The site uses `@vite-pwa/vitepress` with service worker caching:
+- Fonts/CSS: CacheFirst (`file-cache`)
+- Images (webp/png/jpg): CacheFirst (`image-cache`)
+- IconFont CDN: CacheFirst with 2-day expiry
+- Auto-update registration, self-destroying on update
+- Fallback excludes: sitemap.xml, rss.xml, robots.txt
+
+### Auto-Imports
+
+- `unplugin-auto-import`: auto-imports Vue 3 and VitePress APIs (ref, computed, useData, useRoute, etc.)
+- `unplugin-vue-components`: auto-registers components from `.vitepress/theme/components/` and `.vitepress/theme/views/`
 
 ### Theme Configuration System
 
@@ -143,3 +181,16 @@ references:
 **脚本文件：**
 - `scripts/scrape_xiaohongshu.py` — 主流程（Python，`pip install requests Pillow`）
 - `scripts/_xiaohongshu_renderer.mjs` — Puppeteer 渲染器（Node.js，移动端 UA 免登录）
+
+## 微信公众号文章爬取
+
+使用 `/scrape-wechat` slash command 可将微信公众号文章转为本博客 Markdown 文章。
+
+**基础用法：**
+```
+/scrape-wechat <url> [--slug <slug>] [--date <YYYY-MM-DD>] [--tags <tag1,tag2>] [--categories <cat>]
+```
+
+**脚本文件：**
+- `scripts/scrape_wechat.py` — 主流程（Python，`pip install requests Pillow`）
+- `scripts/_wechat_renderer.mjs` — Puppeteer 渲染器（Node.js）
