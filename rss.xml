@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>广州百晓生</title>
+        <link>https://guangzhou.suporka.site</link>
+        <description>一个懂广州、懂吃喝玩乐、懂年轻人的本地生活号</description>
+        <lastBuildDate>Mon, 25 May 2026 07:08:55 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>小皮咖</generator>
+        <language>zh</language>
+        <copyright>Copyright © 2020-present 小皮咖</copyright>
+        <item>
+            <title><![CDATA[广州身份证到期换证/异地办理攻略：自助机、网办、窗口怎么选？]]></title>
+            <link>https://guangzhou.suporka.site/posts/2026/id-card-renewal</link>
+            <guid>https://guangzhou.suporka.site/posts/2026/id-card-renewal</guid>
+            <pubDate>Thu, 21 May 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[在广州办身份证不一定要回老家。广东户籍可优先看网办，外省户籍换证、补证多数情况可走自助机或窗口。本文整理适用人群、材料、流程、费用和避坑提醒。]]></description>
+            <author>zxpscau@163.com (小皮咖)</author>
+        </item>
+        <item>
+            <title><![CDATA[广州驾驶证期满换证最简攻略]]></title>
+            <link>https://guangzhou.suporka.site/posts/2026/driver-license-renewal</link>
+            <guid>https://guangzhou.suporka.site/posts/2026/driver-license-renewal</guid>
+            <pubDate>Wed, 20 May 2026 00:00:00 GMT</pubDate>
+            <description><![CDATA[广州驾驶证期满换证最简攻略]]></description>
+            <author>zxpscau@163.com (小皮咖)</author>
+        </item>
+        <item>
+            <title><![CDATA[外地车转广州新能源车牌]]></title>
+            <link>https://guangzhou.suporka.site/posts/2026/car-transfer</link>
+            <guid>https://guangzhou.suporka.site/posts/2026/car-transfer</guid>
+            <pubDate>Tue, 20 Feb 2024 00:00:00 GMT</pubDate>
+            <description><![CDATA[经常跑广州的外地新能源车主，转广州牌的流程其实很简单，自己办理安心还能省几百大洋。]]></description>
+            <author>zxpscau@163.com (小皮咖)</author>
+        </item>
+    </channel>
+</rss>
