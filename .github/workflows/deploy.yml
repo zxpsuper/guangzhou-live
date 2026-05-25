@@ -3,7 +3,7 @@ name: Build and Deploy to GitHub Pages
 on:
   push:
     branches:
-      - github  # 指定触发部署的分支，通常是main或master
+      - main  # 指定触发部署的分支，通常是main或master
 
 permissions:
   contents: write
