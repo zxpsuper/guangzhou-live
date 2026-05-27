@@ -42,7 +42,9 @@
       "Bash(py *)",
       "Bash(magick *)",
       "Bash(cwebp *)",
-      "Bash(node *)"
+      "Bash(node *)",
+      "Bash(npm run *)",
+      "Bash(npx vitepress *)"
     ]
   }
 }

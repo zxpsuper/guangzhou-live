@@ -1,7 +1,7 @@
 ---
 title: 广州驾驶证期满换证最简攻略
 tags: [驾驶证期满换证]
-categories: [车辆相关]
+categories: [办事攻略]
 date: 2026-05-20
 description: 广州驾驶证期满换证最简攻略
 ---

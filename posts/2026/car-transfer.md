@@ -1,7 +1,7 @@
 ---
 title: 外地车转广州新能源车牌
 tags: [新能源, 车牌]
-categories: [车辆相关]
+categories: [办事攻略]
 date: 2024-02-20
 description: 经常跑广州的外地新能源车主，转广州牌的流程其实很简单，自己办理安心还能省几百大洋。
 references:
